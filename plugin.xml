@@ -1,0 +1,12 @@
+<library path="lib/libtransform_manager_plugin">
+    <class name="transform_manager/TransformManagerPlugin" type="transform_manager::TransformManagerPlugin" base_class_type="rqt_gui_cpp::Plugin">
+        <description>
+            Interface to modify static transformations.
+        </description>
+        <qtgui>
+            <label>Tranform Manager</label>
+            <icon type="theme">system-help</icon>
+            <statustip>Manage static transformations</statustip>
+        </qtgui>
+    </class>   
+</library>
