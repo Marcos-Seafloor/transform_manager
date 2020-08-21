@@ -6,6 +6,11 @@
 #include <ros/ros.h>
 #include <tf2_msgs/TFMessage.h>
 
+namespace tf2
+{
+    class Quaternion;
+}
+
 namespace transform_manager
 {
     
@@ -32,6 +37,9 @@ private slots:
     
 private:
     void staticTransformCallback(const tf2_msgs::TFMessage & msg);
+    void updateGUI(std::string const &transform);
+    void updateCurrentQuaternion(tf2::Quaternion const &q);
+    std::string ensureTransformExists();
     
     Ui::TransformManagerWidget m_ui;
     QWidget* m_widget;
