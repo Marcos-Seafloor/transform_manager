@@ -1,6 +1,6 @@
 #include <ros/ros.h>
 #include <tf2_ros/static_transform_broadcaster.h>
-
+#include "transform_manager/UpdateStaticTransform.h"
 
 // Following is from https://github.com/ros/geometry2/blob/noetic-devel/tf2_ros/src/static_transform_broadcaster_program.cpp
 bool validateXmlRpcTf(XmlRpc::XmlRpcValue tf_data) {
@@ -45,6 +45,7 @@ public:
             }
 
         }
+        m_serviceServer = node.advertiseService("update_static_transform", &TransformManager::updateStaticTransform, this);
     }
 private:
     void addTransform(XmlRpc::XmlRpcValue const &transform)
@@ -61,8 +62,16 @@ private:
         t.transform.rotation.w = transform["transform"]["rotation"]["w"];
         m_broadcaster.sendTransform(t);
     }
+
+    bool updateStaticTransform(transform_manager::UpdateStaticTransform::Request &req, transform_manager::UpdateStaticTransform::Response &res)
+    {
+        ROS_INFO_STREAM(req);
+        m_broadcaster.sendTransform(req.static_transform);
+        return true;
+    }
     
-    tf2_ros::StaticTransformBroadcaster m_broadcaster;   
+    tf2_ros::StaticTransformBroadcaster m_broadcaster;
+    ros::ServiceServer m_serviceServer;
 };
 
 int main(int argc, char **argv)

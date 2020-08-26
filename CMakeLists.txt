@@ -9,6 +9,18 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   rqt_gui
   rqt_gui_cpp
+  message_generation
+  geometry_msgs
+)
+
+add_service_files(
+  FILES
+  UpdateStaticTransform.srv
+)
+
+generate_messages(
+  DEPENDENCIES
+  geometry_msgs
 )
 
 set(CMAKE_AUTOMOC ON)
@@ -64,12 +76,15 @@ add_library(transform_manager_plugin
     ${transform_manager_plugin_UIS_H}
 )
 
+
 qt5_use_modules(transform_manager_plugin Widgets)
 
 target_link_libraries(transform_manager_plugin
     ${QT_LIBRARIES}
     ${catkin_LIBRARIES}
 )
+
+add_dependencies(transform_manager_plugin transform_manager_gencpp)
 
 find_package(class_loader)
 class_loader_hide_library_symbols(transform_manager_plugin)
@@ -91,6 +106,8 @@ add_executable(${PROJECT_NAME}_node src/transform_manager.cpp)
 target_link_libraries(${PROJECT_NAME}_node
   ${catkin_LIBRARIES}
 )
+
+add_dependencies(transform_manager_node transform_manager_gencpp)
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}

@@ -4,6 +4,7 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include "transform_manager/UpdateStaticTransform.h"
 
 namespace transform_manager
 {
@@ -49,6 +50,7 @@ void TransformManagerPlugin::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(m_ui.rpyYawLineEdit, SIGNAL(editingFinished()), this, SLOT(onRPYEditingFinished()));
     
     m_staticTransformSubscriber = getNodeHandle().subscribe("/tf_static", 10, &TransformManagerPlugin::staticTransformCallback, this);
+    m_serviceClient = getNodeHandle().serviceClient<transform_manager::UpdateStaticTransform>("/update_static_transform");
 }
 
 void TransformManagerPlugin::shutdownPlugin()
@@ -82,6 +84,21 @@ void TransformManagerPlugin::onTransformChanged(int index)
     updateGUI(m_ui.transformListComboBox->itemText(index).toStdString());
     
 }
+
+void TransformManagerPlugin::sendUpdate(std::string const &transform)
+{
+    auto i = m_transformMap.find(transform);
+    if(i != m_transformMap.end())
+    {
+        transform_manager::UpdateStaticTransform ust;
+        ust.request.static_transform = i->second;
+        ROS_INFO_STREAM(ust.request);
+        bool success = m_serviceClient.call(ust);
+        ROS_INFO_STREAM("update transform service call success:" << success);
+    }
+    updateGUI(transform);
+}
+
 
 void TransformManagerPlugin::updateGUI(std::string const &transform)
 {
@@ -148,7 +165,7 @@ void TransformManagerPlugin::updateCurrentQuaternion(tf2::Quaternion const &q)
     
     m_transformMap[transform].transform.rotation = tf2::toMsg(nq);
     
-    updateGUI(transform);
+    sendUpdate(transform);
 }
 
 void TransformManagerPlugin::onParentFrameEditingFinished()
@@ -163,6 +180,7 @@ void TransformManagerPlugin::onTranslationEditingFinished()
     m_transformMap[transform].transform.translation.x = m_ui.xLineEdit->text().toDouble();
     m_transformMap[transform].transform.translation.y = m_ui.yLineEdit->text().toDouble();
     m_transformMap[transform].transform.translation.z = m_ui.zLineEdit->text().toDouble();
+    sendUpdate(transform);
 }
 
 void TransformManagerPlugin::onQaternionEditingFinished()
