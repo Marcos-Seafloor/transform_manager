@@ -99,6 +99,24 @@ void TransformManagerPlugin::sendUpdate(std::string const &transform)
     updateGUI(transform);
 }
 
+std::string TransformManagerPlugin::generateYaml(std::string const &transform)
+{
+    std::string ret;
+    auto i = m_transformMap.find(transform);
+    if(i != m_transformMap.end())
+    {
+        ret += " - { header: {frame_id: \"" + i->second.header.frame_id +"\"}, ";
+        ret += "child_frame_id: \"" +transform+"\", ";
+        ret += "transform: {translation: {x: " + std::to_string(i->second.transform.translation.x) + ", ";
+        ret += "y: " + std::to_string(i->second.transform.translation.y) + ", ";
+        ret += "z: " + std::to_string(i->second.transform.translation.z) + "}, ";
+        ret += "rotation: {x: " + std::to_string(i->second.transform.rotation.x) + ", ";
+        ret += "y: " + std::to_string(i->second.transform.rotation.y) + ", ";
+        ret += "z: " + std::to_string(i->second.transform.rotation.z) + ", ";
+        ret += "w: " + std::to_string(i->second.transform.rotation.w) + "} } }";
+    }
+    return ret;
+}
 
 void TransformManagerPlugin::updateGUI(std::string const &transform)
 {
@@ -134,6 +152,8 @@ void TransformManagerPlugin::updateGUI(std::string const &transform)
         m_ui.rpyRollLineEdit->setText(QString::number(roll*180/M_PI));
         m_ui.rpyPitchLineEdit->setText(QString::number(pitch*180/M_PI));
         m_ui.rpyYawLineEdit->setText(QString::number(yaw*180/M_PI));
+        
+        m_ui.yamlTextEdit->setText(QString(generateYaml(transform).c_str()));
     }
    
 }

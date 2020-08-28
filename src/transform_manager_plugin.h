@@ -41,6 +41,7 @@ private:
     void updateGUI(std::string const &transform);
     void updateCurrentQuaternion(tf2::Quaternion const &q);
     std::string ensureTransformExists();
+    std::string generateYaml(std::string const &transform);
     
     Ui::TransformManagerWidget m_ui;
     QWidget* m_widget;

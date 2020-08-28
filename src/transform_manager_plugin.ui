@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>487</width>
-    <height>475</height>
+    <height>551</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -257,6 +257,13 @@
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="yamlTextEdit">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item>
